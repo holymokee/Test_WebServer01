@@ -9,27 +9,31 @@ topics = [
     {'id': 3, 'title' : 'javascript', 'body' : 'javascript is...'},
 ]
 
-@app.route('/')
-def index():
-    liTags = ''
-
-    for topic in topics:
-        liTags += f'<li><a href="/read/{topic["id"]}/">{topic["title"]}</a></li>'
-
-    print(liTags)
-
+def SetHtml(contents, context):
     return f'''<!doctype html>
     <html>
         <body>
             <h1><a href="/">WEB<a></h1>
             <ol>
-                {liTags}
+                {contents}
             </ol>
-            <h2>Welcome</h2>
-            Hello, Web
+            {context}
         </body>
     </html>
     '''
+
+def GetTags():
+    liTags = ''
+
+    for topic in topics:
+        liTags += f'<li><a href="/read/{topic["id"]}/">{topic["title"]}</a></li>'
+
+    return liTags
+
+@app.route('/')
+def index():
+
+    return SetHtml(GetTags(), f'<h2>Welcome</h2>Hello, Web')
     
 @app.route('/create/')
 def index2():
@@ -37,10 +41,6 @@ def index2():
 
 @app.route('/read/<int:id>/')
 def read(id):
-    liTags = ''
-
-    for topic in topics:
-        liTags += f'<li><a href="/read/{topic["id"]}/">{topic["title"]}</a></li>'
 
     title = ''
     body = ''
@@ -51,17 +51,6 @@ def read(id):
             body = topic["body"]
             break
 
-    return f'''<!doctype html>
-    <html>
-        <body>
-            <h1><a href="/">WEB<a></h1>
-            <ol>
-                {liTags}
-            </ol>
-            <h2>{title}</h2>
-            {body}
-        </body>
-    </html>
-    '''
+    return SetHtml(GetTags(), f'<h2>{title}</h2>{body}')
 
-app.run(port=8080, debug=True)
+app.run(debug=True)
